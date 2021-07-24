@@ -2,20 +2,26 @@
 
 namespace App\Controllers;
 
-use \App\Libraries\OAuth2;
+use \App\Libraries\OAuth;
 use \OAuth2\Request;
-use CodeIgniter\API\ResponseTrait;
+use \CodeIgniter\API\ResponseTrait;
 
 class User extends BaseController
 {
   use ResponseTrait;
-  public function index()
+  public function login()
   {
-    $OAuth = new OAuth2();
+    // $OAuth = new OAuth();
+    // $request = new Request();
+    // $respond = $OAuth->server->handleTokenRequest($request->createFromGlobals());
+    // $code = $respond->getStatusCode();
+    // $body = $respond->getResponseBody();
+    // return $this->respond(json_decode($body), $code);
+    $oauth = new OAuth();
     $request = new Request();
-    $respond = $OAuth->server->handleTokenRequest($request->createFromGlobals());
-    $codeStatus = $respond->getStatusCode();
-    $responseBody = $respond->getResponseBody();
-    return $this->respond($responseBody, $codeStatus);
+    $respond = $oauth->server->handleTokenRequest($request->createFromGlobals());
+    $code = $respond->getStatusCode();
+    $body = $respond->getResponseBody();
+    return $this->respond(json_decode($body), $code);
   }
 }
