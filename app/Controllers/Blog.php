@@ -32,4 +32,34 @@ class Blog extends ResourceController
       return $this->respondCreated($data);
     }
   }
+
+  public function show($id = null)
+  {
+    $userID = $this->model->find($id);
+    return $this->respond($userID);
+  }
+
+  public function update($id = null)
+  {
+    $data = $this->request->getRawInput();
+    if (!$this->validation->run($data, 'blogRules')) {
+      $errors = $this->validation->getErrors();
+      return $this->fail($errors);
+    } else {
+      $data['post_id'] = $id;
+      $this->model->save($data);
+      return $this->respondUpdated($data);
+    }
+  }
+
+  public function delete($id = null)
+  {
+    $postId = $this->model->find($id);
+    if ($postId) {
+      $this->model->delete($postId);
+      return $this->respondDeleted(json_encode('Post deleted successfully'));
+    } else {
+      return $this->failNotFound('ID is not found');
+    }
+  }
 }

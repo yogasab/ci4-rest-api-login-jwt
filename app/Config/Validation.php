@@ -42,6 +42,6 @@ class Validation
 	//--------------------------------------------------------------------
 	public $blogRules = [
 		'post_title' => 'required|min_length[6]',
-		'post_title' => 'required'
+		'post_description' => 'required'
 	];
 }
