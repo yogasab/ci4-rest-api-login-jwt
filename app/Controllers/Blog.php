@@ -23,13 +23,23 @@ class Blog extends ResourceController
   public function create()
   {
     $data = $this->request->getPost();
+    $fileImage = $this->request->getFile('post_featured_image');
     if (!$this->validation->run($data, 'blogRules')) {
-      $errors = $this->validation->getErrors();
-      return $this->fail($errors);
+      return $this->fail($this->validation->getErrors());
     } else {
-      $post = $this->model->insert($data);
-      $data['post_id'] = $post;
-      return $this->respondCreated($data);
+      if (!$fileImage->isValid()) {
+        return $this->fail($fileImage->getErrorString());
+      }
+      $fileImage->move('./assets/uploads');
+      $fileImageName = $fileImage->getName();
+      $dataBlog = [
+        'post_title' => $this->request->getVar('post_title'),
+        'post_description' => $this->request->getVar('post_description'),
+        'post_featured_image' => $fileImageName
+      ];
+      $save = $this->model->insert($dataBlog);
+      $dataBlog['post_id'] = $save;
+      return $this->respondCreated($dataBlog);
     }
   }
 

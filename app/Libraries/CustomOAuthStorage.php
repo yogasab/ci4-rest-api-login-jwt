@@ -429,7 +429,7 @@ class CustomOAuthStorage implements
    */
   protected function checkPassword($user, $password)
   {
-    return password_verify($password, $user['password']); 
+    return password_verify($password, $user['password']);
     // return $user['password'] == $this->hashPassword($password);
   }
 
