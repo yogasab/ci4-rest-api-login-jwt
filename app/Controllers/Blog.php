@@ -51,15 +51,39 @@ class Blog extends ResourceController
 
   public function update($id = null)
   {
-    $data = $this->request->getRawInput();
-    if (!$this->validation->run($data, 'blogRules')) {
-      $errors = $this->validation->getErrors();
-      return $this->fail($errors);
-    } else {
-      $data['post_id'] = $id;
-      $this->model->save($data);
-      return $this->respondUpdated($data);
+    helper(['form', 'array']);
+    $rules = [
+      'post_title' => 'required|min_length[6]',
+      'post_description' => 'required',
+    ];
+    $imageFile = array_search('post_featured_image.name', $_FILES);
+    if ($imageFile != '') {
+      $rulesImage = ['post_featured_image' => 'uploaded[post_featured_image]|max_size[post_featured_image, 1024]|is_image[post_featured_image]'];
+      $rules = array_merge($rulesImage, $rules);
     }
+
+    if (!$this->validate($rules)) {
+      return $this->fail($this->validator->getErrors());
+    } else {
+      $data = [
+        'post_id' => $id,
+        'post_title' => $this->request->getVar('post_title'),
+        'post_description' => $this->request->getVar('post_description')
+      ];
+      // If the user upload a new image
+      if ($imageFile != '') {
+        $file = $this->request->getFile('post_featured_image');
+        if (!$file->isValid()) {
+          return $this->fail($file->getErrorString());
+        }
+        $file->move('./assets/uploads');
+        // Replace the current name file image with the new name
+        $data['post_featured_image'] = $file->getName();
+      }
+      $this->model->save($data);
+      return $this->respondCreated($data, 'HEHEHEHEHEHE');
+    }
+    // return $this->respond($imageFile);
   }
 
   public function delete($id = null)
